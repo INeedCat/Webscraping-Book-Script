@@ -1,13 +1,82 @@
 import requests
 from bs4 import BeautifulSoup
+ 
+"""first url if first is different than equation for rest"""
+first = ["https://onlinereadfreenovel.com/john-flanagan/39929-rangers_apprentice_1_and_2_bindup_read.html"]
 
-url = ['https://novel22.net/eldest/page-' + str(j + 1) + '-' + str(1051729 + j) + '.html' for j in range(214)]
+"""url list"""
+url = ["https://onlinereadfreenovel.com/john-flanagan/p," + str(j) + ",39929-rangers_apprentice_1_and_2_bindup_read.html" for j in range(2, 44)]
 
-""" for i in url:
-    print(i) """
 
-writetofile = open(r"EldestBook.html", "a")
+"""Adds first to url list"""
+tempurl = first
+for link in url:
+    tempurl.append(link)
 
+url = tempurl
+
+
+"""prints url list for checking"""
+""" 
+for i in url:
+    print(i)
+"""
+
+writetofile = open(r"Ruins&Bridge.html", "wb")
+
+"""Writes heading of HTML file encoded to UTF-8"""
+writetofile.write("""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruins And Bridge</title>
+</head>
+
+<style>
+    *{
+        background-color: black;
+        color: white;
+        padding-left:2px;
+        margin:0px;
+    }
+    
+    html{
+		overflow: hidden;
+
+		position: absolute;
+
+		/*   use when full screened */
+		margin-left: 4px;
+		margin-right: 4px;
+
+		min-width: 400px;
+        padding-left: 5px;
+        padding-right: 5px;
+        padding-top: 2%;
+        column-count: 2;
+        column-gap: 50px;
+        column-rule-width: calc(1300px * 2px);
+        height: 95%;
+    }
+    
+    body{
+        width:100%;
+        height:90%;
+    }
+
+    p{
+        font-size: 1.3em;
+    }
+</style>
+
+<body>
+""".encode('utf-8'))
+
+
+"""Writes all <p> tags from page encoded to UTF-8"""
 for i in range(len(url)):
     r = requests.get(url[i])
     
@@ -15,8 +84,32 @@ for i in range(len(url)):
 
     soup = soup.findAll('p')
 
-    for s in range(len(soup)-2):
-        writetofile.write(str(soup[s]) + '\n')
+    for s in range(len(soup)):
+        writetofile.write(soup[s].encode('utf-8'))
+""" 
+    x = input("Next Page") 
+"""
 
-"""     x = input("Next Page")  """
+"""Writes footer and JavaScript encoded to UTF-8"""
+writetofile.write("""
+</body>
+<script>
+let page = document.querySelector('html');
+let dist =  1390/* 1398 if fullscreen*/;
+
+document.addEventListener('keydown', (e) => {
+    if (e.keyCode == 39){
+        e.preventDefault();
+        page.style.left = parseFloat(page.style.left || 0) - dist + 'px'; 
+        page.style.right = parseFloat(page.style.right || 0) + dist + 'px';
+    }
+    else if (e.keyCode == 37){
+        e.preventDefault();
+        page.style.left = parseFloat(page.style.left || 0) + dist + 'px'; 
+        page.style.right = parseFloat(page.style.right || 0) - dist + 'px';
+    }
+});
+</script>
+</html>
+""".encode('utf-8'))
 writetofile.close()
